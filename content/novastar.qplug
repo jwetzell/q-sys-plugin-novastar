@@ -1,6 +1,7 @@
--- Plugin for Lightware Devices by Solo Works London
+-- Plugin for NovaStar Video Wall controllers
 -- Built in Lua
--- For source, contact https://soloworks.co.uk
+
+--Layout inspired by VideoHub plugin @ https://github.com/locimation/qsys-plugins
 
 PluginInfo = {
     Name = "NovaStar~VX4S/VX6S/ProHD/ProHDJr/MCTRL4K", -- The tilde here indicates folder structure in the Shematic Elements pane
@@ -11,267 +12,481 @@ PluginInfo = {
     Author = "Joel Wetzell"
 }
 
+function GetPrettyName()
+	return "NovaStar Controller"
+end
+
 -- Once you've drawn your plugin in Designer, you can determine what colors you use a lot. Save yourself some time by putting them in a table, and then simply calling them later.
 local Colors = {
     White = {255, 255, 255},
     Black = {0, 0, 0},
     Red = {255, 0, 0},
     Green = {0, 255, 0},
-    Blue = {0, 0, 255}
+    Blue = {0, 0, 255},
+	DarkGrey = {0x56,0x56,0x56},
+
+	LCD = { 0x02, 0x33, 0xb2 }
 }
 
 -- We can let users determine some of the plugin properties by exposing them here
 -- While this function can be very useful, it is completely optional and not always needed.
 -- If no Properties are set here, only the position and fill properties of your plugin will show in the Properties pane
 function GetProperties()
-    props = {
-        {
-            Name = "host",
-            Type = "string",
-            Value = "127.0.0.1"
-        },
-        {
-            Name = "port",
-            Type = "integer",
-            Min = 1024,
-            Max = 65535,
-            Value = 9990
-        }
-    }
-    return props
+	props = {
+		{
+			Name = "IP Address",
+			Type = "string"
+		}
+	}
+	return props
 end
 
 -- The below function is optional (like GetProperties() is), but it can allow further customization of what users can and can't do with your plugin.
 -- In this example, when Model 1 is selected in the properties pane, the ability to modify some of the properties will be hidden, only allowing customization with Model 2
 -- Another application of this is if you have different input/output types for different models, and want those properties to be dynamic in the Properties pane
 function RectifyProperties(props)
-    return props
+	return props
 end
 
 -- The below function is where you will populate the controls for your plugin.
--- If you've written some of the Runtime code already, simply use the control names you populated in Text Controller/Control Script, and use their Properties to inform the values here
--- ControlType can be Button, Knob, Indicator or Text
--- ButtonType ( ControlType == Button ) can be Momentary, Toggle or Trigger
--- IndicatorType ( ControlType == Indicator ) can be Led, Meter, Text or Status
--- ControlUnit ( ControlType == Knob ) can be Hz, Float, Integer, Pan, Percent, Position or Seconds
 function GetControls(props)
-    ctls = {
-        -- ControlType == Indicator
-        {
-            Name = "IndicatorLed",
-            ControlType = "Indicator",
-            IndicatorType = "Led",
-            PinStyle = "Output",
-            UserPin = true
-        },
-        {
-            Name = "IndicatorMeter",
-            ControlType = "Indicator",
-            IndicatorType = "Meter",
-            PinStyle = "Output",
-            UserPin = true
-        },
-        {
-            Name = "IndicatorText",
-            ControlType = "Indicator",
-            IndicatorType = "Text",
-            PinStyle = "Output",
-            UserPin = true
-        },
-        {
-            Name = "IndicatorStatus",
-            ControlType = "Indicator",
-            IndicatorType = "Status",
-            PinStyle = "Output",
-            UserPin = true
-        },
-        -- ControlType == Button
-        {
-            Name = "ButtonMomentary",
-            ControlType = "Button",
-            ButtonType = "Toggle",
-            PinStyle = "Input",
-            Count = 1,
-            UserPin = true
-        },
-        {
-            Name = "ButtonToggle",
-            ControlType = "Button",
-            ButtonType = "Toggle",
-            PinStyle = "Input",
-            Count = 1,
-            UserPin = true
-        },
-        {
-            Name = "ButtonTrigger",
-            ControlType = "Button",
-            ButtonType = "Trigger",
-            PinStyle = "Input",
-            Count = 1,
-            UserPin = true
-        },
-        -- ControlType == Knob
-        {
-            Name = "KnobHz",
-            ControlType = "Knob",
-            ControlUnit = "Hz",
-            PinStyle = "Output",
-            Count = 1,
-            UserPin = true
-        },
-        {
-            Name = "KnobFloat",
-            ControlType = "Knob",
-            ControlUnit = "Float",
-            PinStyle = "Output",
-            Count = 1,
-            UserPin = true
-        },
-        {
-            Name = "KnobInteger",
-            ControlType = "Knob",
-            ControlUnit = "Integer",
-            PinStyle = "Output",
-            Count = 1,
-            UserPin = true
-        },
-        {
-            Name = "KnobPan",
-            ControlType = "Knob",
-            ControlUnit = "Pan",
-            PinStyle = "Output",
-            Count = 1,
-            UserPin = true
-        },
-        {
-            Name = "KnobPercent",
-            ControlType = "Knob",
-            ControlUnit = "Percent",
-            PinStyle = "Output",
-            Count = 1,
-            UserPin = true
-        },
-        {
-            Name = "KnobPosition",
-            ControlType = "Knob",
-            ControlUnit = "Position",
-            PinStyle = "Output",
-            Count = 1,
-            UserPin = true
-        },
-        {
-            Name = "KnobSeconds",
-            ControlType = "Knob",
-            ControlUnit = "Seconds",
-            PinStyle = "Output",
-            Count = 1,
-            UserPin = true
-        }
-    }
-    return ctls
+	local controls = {
+		-- Source Inputs
+		{
+			Name = "IN1",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN2",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN3",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN4",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN5",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN6",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN7",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN8",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN9",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		{
+			Name = "IN0",
+			ControlType = "Button",
+			ButtonType = "Trigger"
+		},
+		--Brightness Knob
+		{
+			Name = "Brightness",
+			ControlType = "Knob",
+			ControlUnit = "Integer",
+			Min = 0,
+			Max = 255,
+			PinStyle = "Both",
+			UserPin = true
+		},
+		{
+			Name = "Status",
+			ControlType = "Indicator",
+			IndicatorType = "Status",
+			PinStyle = "Output",
+			UserPin = true
+		}
+	}
+	return controls
 end
 
 -- Variable holding Page Names for ease
 local pagenames = {"System"}
 
--- This function allows you to populate pages in your plugin.
-function GetPages(props)
-    pages = {}
-    table.insert(pages, {name = pagenames[1]})
-    return pages
+function GetPages(props) -- This function allows you to populate pages in your plugin.
+	local pages = {}
+	table.insert(pages, {name = pagenames[1]})
+	return pages
 end
 
--- This function allows you to layout pages in your plugin.
 function GetControlLayout(props)
-    -- layout holds representaiton of Controls
-    local layout = {}
-    -- graphics holds aesthetic & design items
-    local graphics = {}
-    -- ctl_str is a helper string to get around system not indexing single value as [1]
-    --local ctl_str = tostring(props["SomeValue"].Value == 1 and "" or " " .. PageIndex)
-    -- x,y allows an easy method of knowing where you are relative to the section being designed
-    local x, y = 0, 0
+	local controls = {}
 
-    -- Graphics Section
-    table.insert(
-        graphics,
-        {
-            Type = "GroupBox", -- This is the overall groupbox that will give the plugin a more 'contained' look
-            Text = "Design Elements",
-            HTextAlign = "Left",
-            Fill = Colors.White,
-            CornerRadius = 8,
-            StrokeColor = Colors.Black,
-            StrokeWidth = 1,
-            Position = {x, y},
-            Size = {220, 140} -- The width of the main GroupBox is dependent on how many channels the user specified. More channels means a wider group box
-        }
-    )
-    table.insert(
-        graphics,
-        {
-            Type = "Text",
-            Text = "My Text Field",
-            Font = "Roboto",
-            FontSize = 12,
-            FontStyle = "Bold",
-            HTextAlign = "Left",
-            Color = Colors.Black,
-            Position = {x + 5, y + 20},
-            Size = {100, 20}
-        }
-    )
-    -- Buttons Section
-    y = y + 150
-    table.insert(
-        graphics,
-        {
-            Type = "GroupBox", -- This is the overall groupbox that will give the plugin a more 'contained' look
-            Text = "Button Elements",
-            HTextAlign = "Left",
-            Fill = Colors.White,
-            CornerRadius = 8,
-            StrokeColor = Colors.Black,
-            StrokeWidth = 1,
-            Position = {x, y},
-            Size = {220, 140} -- The width of the main GroupBox is dependent on how many channels the user specified. More channels means a wider group box
-        }
-    )
-    -- Indicator Section
-    y = y + 150
-    table.insert(
-        graphics,
-        {
-            Type = "GroupBox", -- This is the overall groupbox that will give the plugin a more 'contained' look
-            Text = "Indicator Elements",
-            HTextAlign = "Left",
-            Fill = Colors.White,
-            CornerRadius = 8,
-            StrokeColor = Colors.Black,
-            StrokeWidth = 1,
-            Position = {x, y},
-            Size = {220, 140} -- The width of the main GroupBox is dependent on how many channels the user specified. More channels means a wider group box
-        }
-    )
-    -- Knob Section
-    y = y + 150
-    table.insert(
-        graphics,
-        {
-            Type = "GroupBox", -- This is the overall groupbox that will give the plugin a more 'contained' look
-            Text = "Knob Elements",
-            HTextAlign = "Left",
-            Fill = Colors.White,
-            CornerRadius = 8,
-            StrokeColor = Colors.Black,
-            StrokeWidth = 1,
-            Position = {x, y},
-            Size = {220, 140} -- The width of the main GroupBox is dependent on how many channels the user specified. More channels means a wider group box
-        }
-    )
+	local rackSize = {800, 120}
 
-    return layout, graphics
+	local inputPosition = {rackSize[1]*1/2,5}
+
+	local graphics = {
+
+		{ -- Outer box
+			Type = "GroupBox",
+			StrokeWidth = 1,
+			CornerRadius = 8,
+			Fill = Colors.Black,
+			StrokeColor = {0,0,0},
+			Size = rackSize,
+			Position = {0,0}
+		},
+		-- Inputs box
+		{ 
+			Type = "GroupBox",
+			Text = "INPUTS",
+			Color = Colors.White,
+			HTextAlign = "CENTER",
+			CornerRadius = 3,
+			Fill = Colors.Black,
+			StrokeColor = Colors.White,
+			StrokeWidth = 1,
+			Size = {250, rackSize[2] - 10},
+			Position = inputPosition
+		},
+		-- NovaStar Text
+		{ 
+			Type = "Label",
+			Text = "NovaStar",
+			TextSize = 16,
+			HTextAlign = "Center",
+			IsBold = true,
+			Size = {150,16},
+			Color = Colors.White,
+			Position = {60, rackSize[2]*1/8}
+		}
+
+	}
+
+	controls['Brightness'] = {
+		Style="Knob",
+		Color = Colors.DarkGrey,
+		Fill = Colors.DarkGrey,
+		Size={rackSize[2]/2,rackSize[2]/2},
+		Position= {250, rackSize[2]*1/4}
+	}
+
+	local SourceButton = {
+		yStart = inputPosition[2] + 20,
+		Padding = 5
+	}
+	SourceButton.Size = {(rackSize[2] - 30 - (SourceButton.Padding * 2))/2, (rackSize[2] - 30 - (SourceButton.Padding * 2))/2}
+	SourceButton.xStart = inputPosition[1] + ((250 - (((SourceButton.Size[1] * 5) + (SourceButton.Padding * 4))))/2)
+	--First row of input buttons
+	controls['IN1'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "1",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart, SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+	controls['IN2'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "2",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart + ((SourceButton.Size[1]+SourceButton.Padding)*1), SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+	controls['IN3'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "3",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart + ((SourceButton.Size[1]+SourceButton.Padding)*2),SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+	controls['IN4'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "4",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart + ((SourceButton.Size[1]+SourceButton.Padding)*3),SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+
+	controls['IN5'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "5",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart + ((SourceButton.Size[1]+SourceButton.Padding)*4),SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+	--bump down second row of buttons
+	SourceButton.yStart = SourceButton.yStart + SourceButton.Size[1] + (SourceButton.Padding/2)
+
+	--Second row of input buttons
+	controls['IN6'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "6",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart,SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+	controls['IN7'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "7",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart + ((SourceButton.Size[1]+SourceButton.Padding)*1), SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+
+	controls['IN8'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "8",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart + ((SourceButton.Size[1]+SourceButton.Padding)*2),SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+	controls['IN9'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "9",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart + ((SourceButton.Size[1]+SourceButton.Padding)*3),SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+
+	controls['IN0'] = {
+		Style = "Button",
+		ButtonType = "Trigger",
+		Legend = "0",
+		UnlinkOffColor = true,
+		OffColor = Colors.White,
+		Color = Colors.Red,
+		Position = {SourceButton.xStart + ((SourceButton.Size[1]+SourceButton.Padding)*4),SourceButton.yStart},
+		Size = SourceButton.Size
+	}
+
+	controls['Status'] = {
+		Style = "Text",
+		Color = Colors.LCD,
+		TextSize = 10,
+		UserPin = true,
+		PinStyle = "Output",
+		Size = {150,rackSize[2]/2},
+		Position = {60, rackSize[2]*1/4}
+	}
+	
+	return controls, graphics
 end
 
-if Controls then
+if (Controls) then
+	local NovaStar = {
+		socket = TcpSocket.New(),
+		setStatus = function (value, msg) 
+			-- 0 = OK
+			-- 1 = Compromised
+			-- 2 = Fault
+			-- 3 = Not Present
+			-- 4 = Missing
+			-- 5 = Initializing
+			-- >5 = Fault
+			Controls['Status'].Value = value;
+			Controls['Status'].String = msg;
+		end,
+		Commands = {
+			Preamble = {0x55, 0xAA},
+			Connect = {0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x02,0x00,0x57,0x56},
+			Brightness = {0x00,0x00,0xFE,0xFF,0x01,0xFF,0xFF,0xFF,0x01,0x00,0x01,0x00,0x00,0x02,0x01,0x00},
+			VX4S = {
+				{0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x2D,0x00,0x20,0x02,0x01,0x00,0x10,0xB4,0x56},
+				{0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x2D,0x00,0x20,0x02,0x01,0x00,0xA0,0x44,0x57},
+				{0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x2D,0x00,0x20,0x02,0x01,0x00,0x01,0xA5,0x56},
+				{0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x2D,0x00,0x20,0x02,0x01,0x00,0x02,0xA6,0x56},
+				{0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x2D,0x00,0x20,0x02,0x01,0x00,0x71,0x15,0x57},
+				{0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x2D,0x00,0x20,0x02,0x01,0x00,0x72,0x16,0x57},
+				{0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x2D,0x00,0x20,0x02,0x01,0x00,0x40,0xE4,0x56},
+				{0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x01,0x00,0x2D,0x00,0x20,0x02,0x01,0x00,0x90,0x34,0x57},
+			}
+		},
+		Response = {
+			Connected = {0xAA,0x55,0x00,0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x02,0x00,0x06,0x61,0xBE,0x56}
+		}
+
+	}
+	-- NovaStar.socket.ReadTimeout = 0.5
+
+	function computeChecksum(bytes)
+        local sum = 0
+        for k,v in pairs(bytes) do
+            sum = sum + v
+        end
+        sum = sum + 0x5555
+        local sum_l = sum >> 8
+        local sum_h = sum & 0xFF
+
+		local checksum = {}
+        table.insert(checksum, sum_h)
+        table.insert(checksum, sum_l)
+        return checksum
+    end
+
+	function getCmdString(bytes)
+		local cmd = ""
+		for k,v in pairs(bytes) do
+			cmd = cmd .. string.pack("B", v)
+		end
+		return cmd
+	end
+
+	function sendCommand(cmd)
+		if NovaStar.socket.IsConnected then
+			NovaStar.socket:Write(getCmdString(NovaStar.Commands.Preamble) .. getCmdString(cmd))
+		end
+	end
+
+	function sendBrightness(value)
+		local cmd = NovaStar.Commands.Brightness
+		cmd[17] = value
+		if NovaStar.socket.IsConnected then
+			NovaStar.socket:Write(getCmdString(NovaStar.Commands.Preamble) .. getCmdString(cmd) .. getCmdString(computeChecksum(cmd)))
+		end
+	end
+
+	function hex_dump (str)
+		local len = string.len( str )
+		local dump = ""
+		local hex = ""
+		local asc = ""
+		
+		for i = 1, len do
+			if 1 == i % 8 then
+				dump = dump .. hex .. asc .. "\n"
+				hex = string.format( "%04x: ", i - 1 )
+				asc = ""
+			end
+			
+			local ord = string.byte( str, i )
+			hex = hex .. string.format( "%02x ", ord )
+			if ord >= 32 and ord <= 126 then
+				asc = asc .. string.char( ord )
+			else
+				asc = asc .. "."
+			end
+		end
+		return dump .. hex .. string.rep( "   ", 8 - len % 8 ) .. asc
+	end
+
+	function processResponse(data)
+		if data == getCmdString(NovaStar.Response.Connected) then
+			print("Successful Connection Response Received")
+			NovaStar.setStatus(0,"Connected - " .. Properties['IP Address'].Value)
+		end
+	end
+
+	NovaStar.socket.Connected = function()
+		print("TCP Connection Established to NovaStar @ " .. Properties['IP Address'].Value)
+		sendCommand(NovaStar.Commands.Connect)
+	end
+
+	NovaStar.socket.Reconnect = function()
+		NovaStar.setStatus(5,"Attempting to reconnect")
+	end
+
+	
+
+	NovaStar.socket.Data = function ()
+		print("Reading " .. NovaStar.socket.BufferLength .. " Bytes")
+		local data = NovaStar.socket:ReadLine(TcpSocket.EOL.Lf);
+
+		while (data ~= nil) do
+			processResponse(data)
+			data = NovaStar.socket:ReadLine(TcpSocket.EOL.Lf);
+		end
+	end
+
+	NovaStar.socket.Closed = function()
+		NovaStar.setStatus(2,"Connection closed by NovaStar")
+	end
+
+	NovaStar.socket.Error = function(sock, err)
+		print("TCP Socket Error: " .. err)
+		NovaStar.setStatus(2,"Communication error with NovaStar")
+	end
+
+	NovaStar.socket.Timeout = function(sock, err)
+		NovaStar.setStatus(2,"Timeout in connection to NovaStar")
+	end
+
+	for k,v in pairs(NovaStar.Commands['VX4S']) do
+		print('Setting up IN' .. k)
+		Controls['IN'..k].EventHandler = function()
+			sendCommand(v)
+		end
+	end
+
+	Controls['Brightness'].EventHandler = function()
+		sendBrightness(Controls['Brightness'].Value)
+	end
+
+	if(Properties['IP Address'].Value ~= '') then
+		NovaStar.setStatus(5, 'Connecting to NovaStar');
+		NovaStar.socket:Connect(Properties['IP Address'].Value, 5200);
+	else
+		NovaStar.setStatus(3, '\nPlease set IP address.');
+		Controls['IN1'].IsDisabled = true;
+		Controls['IN2'].IsDisabled = true;
+		Controls['IN3'].IsDisabled = true;
+		Controls['IN4'].IsDisabled = true;
+		Controls['IN5'].IsDisabled = true;
+		Controls['IN6'].IsDisabled = true;
+		Controls['IN7'].IsDisabled = true;
+		Controls['IN8'].IsDisabled = true;
+		Controls['IN9'].IsDisabled = true;
+		Controls['IN0'].IsDisabled = true;
+		Controls['Brightness'].IsDisabled = true;
+	end;
+
 end
