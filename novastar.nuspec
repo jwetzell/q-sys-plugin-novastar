@@ -3,7 +3,7 @@
 <package >
   <metadata>
     <id>NovaStar</id>
-    <version>0.0.0.0-master</version>
+    <version>0.1.0-master</version>
     <title>NovaStar Controller</title>
     <authors>Joel Wetzell</authors>
     <owners>Joel Wetzell</owners>
