@@ -747,7 +747,7 @@ if (Controls) then
 
 	function processResponse(data)
 		local response = ""
-		for k,v in pairs(bytes) do
+		for k,v in pairs(data) do
 			response = response .. string.pack("B", v)
 		end
 		print("Received Packet")
@@ -773,7 +773,7 @@ if (Controls) then
 	NovaStar.socket.Data = function ()
 		print("Reading " .. NovaStar.socket.BufferLength .. " Bytes")
 		local data = NovaStar.socket:ReadLine(TcpSocket.EOL.Lf);
-
+		
 		while (data ~= nil) do
 			processResponse(data)
 			data = NovaStar.socket:ReadLine(TcpSocket.EOL.Lf);
