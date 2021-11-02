@@ -802,7 +802,6 @@ if (Controls) then
 					sendCommand(v)
 				end
 			else
-				print("value is nill or value doesn't have a length")
 				if(k == 10) then 
 					Controls['IN0'].IsDisabled = true;
 					Controls['IN0'].IsInvisible = true;
