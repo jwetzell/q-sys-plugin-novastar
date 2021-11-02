@@ -750,7 +750,7 @@ if (Controls) then
 		for k,v in pairs(data) do
 			response = response .. string.pack("B", v)
 		end
-		print("Received Packet")
+		print("Processing Packet")
 		print(hex_dump(response))
 
 		if data == getCmdString(NovaStar.Response.Connected) then
@@ -772,12 +772,8 @@ if (Controls) then
 
 	NovaStar.socket.Data = function ()
 		print("Reading " .. NovaStar.socket.BufferLength .. " Bytes")
-		local data = NovaStar.socket:ReadLine(TcpSocket.EOL.Lf);
-		
-		while (data ~= nil) do
-			processResponse(data)
-			data = NovaStar.socket:ReadLine(TcpSocket.EOL.Lf);
-		end
+		local data = NovaStar.socket:Read(NovaStar.socket.BufferLength);
+		processResponse(data)
 	end
 
 	NovaStar.socket.Closed = function()
