@@ -745,19 +745,19 @@ if (Controls) then
 		return dump .. hex .. string.rep( "   ", 8 - len % 8 ) .. asc
 	end
 
-	function processResponse(data)
-		local response = ""
-		for k,v in pairs(data) do
-			response = response .. string.pack("B", v)
-		end
-		print("Processing Packet")
-		print(hex_dump(response))
+	-- function processResponse(data)
+	-- 	local response = ""
+	-- 	for k,v in pairs(data) do
+	-- 		response = response .. string.pack("B", v)
+	-- 	end
+	-- 	print("Processing Packet")
+	-- 	print(hex_dump(response))
 
-		if data == getCmdString(NovaStar.Response.Connected) then
-			print("Successful Connection Response Received")
-			NovaStar.setStatus(0,"Connected - " .. Properties['IP Address'].Value)
-		end
-	end
+	-- 	if data == getCmdString(NovaStar.Response.Connected) then
+	-- 		print("Successful Connection Response Received")
+	-- 		NovaStar.setStatus(0,"Connected - " .. Properties['IP Address'].Value)
+	-- 	end
+	-- end
 
 	NovaStar.socket.Connected = function()
 		print("TCP Connection Established to NovaStar @ " .. Properties['IP Address'].Value)
@@ -773,7 +773,11 @@ if (Controls) then
 	NovaStar.socket.Data = function ()
 		print("Reading " .. NovaStar.socket.BufferLength .. " Bytes")
 		local data = NovaStar.socket:Read(NovaStar.socket.BufferLength);
-		processResponse(data)
+		print(hex_dump(data))
+		if data == getCmdString(NovaStar.Response.Connected) then
+			print("Successful Connection Response Received")
+			NovaStar.setStatus(0,"Connected - " .. Properties['IP Address'].Value)
+		end
 	end
 
 	NovaStar.socket.Closed = function()
