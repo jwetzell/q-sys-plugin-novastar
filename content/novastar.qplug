@@ -722,6 +722,13 @@ if (Controls) then
 		end
 	end
 
+	function sendKeepAlive(timer)
+		print("Sending Keep Alive")
+		sendCommand(NovaStar.Commands.Connect)
+
+	end
+
+
 	function hex_dump (str)
 		local len = string.len( str )
 		local dump = ""
@@ -746,9 +753,15 @@ if (Controls) then
 		return dump .. hex .. string.rep( "   ", 8 - len % 8 ) .. asc
 	end
 
+	keepAliveTimer = Timer.New()
+	keepAliveTimer.EventHandler = sendKeepAlive
+
+
 	NovaStar.socket.Connected = function()
 		print("TCP Connection Established to NovaStar @ " .. Properties['IP Address'].Value)
 		sendCommand(NovaStar.Commands.Connect)
+		keepAliveTimer:Start(2)
+
 	end
 
 	NovaStar.socket.Reconnect = function()
@@ -771,15 +784,18 @@ if (Controls) then
 
 	NovaStar.socket.Closed = function()
 		NovaStar.setStatus(2,"Connection closed by NovaStar")
+		keepAliveTimer:Stop()
 	end
 
 	NovaStar.socket.Error = function(sock, err)
 		print("TCP Socket Error: ", err)
 		NovaStar.setStatus(2,"Communication error with NovaStar")
+		keepAliveTimer:Stop()
 	end
 
 	NovaStar.socket.Timeout = function(sock, err)
 		NovaStar.setStatus(2,"Timeout in connection to NovaStar")
+		keepAliveTimer:Stop()
 	end
 
 	if Properties['Model'].Value ~= '' then
