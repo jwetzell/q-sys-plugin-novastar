@@ -69,52 +69,72 @@ function GetControls(props)
 		{
 			Name = "IN1",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN2",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN3",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN4",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN5",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN6",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN7",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN8",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN9",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "IN0",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		--Brightness Knob
 		{
@@ -178,52 +198,72 @@ function GetControls(props)
 		{
 			Name = "PRESET1",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET2",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET3",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET4",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET5",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET6",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET7",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET8",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET9",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 		{
 			Name = "PRESET10",
 			ControlType = "Button",
-			ButtonType = "Trigger"
+			ButtonType = "Trigger",
+			PinStyle = "Input",
+			UserPin = true
 		},
 
 		{
