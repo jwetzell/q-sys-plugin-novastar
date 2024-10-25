@@ -1270,7 +1270,6 @@ if (Controls) then
 			if (v ~= nil and #v > 1) then
 				print("value is not nill and length greater than 1")
 				Controls['IN'..k].EventHandler = function()
-					sendCommand(NovaStar.Commands.DisplayNormal[Properties['Model'].Value])
 					sendCommand(v)
 				end
 			else
