@@ -1126,11 +1126,6 @@ if (Controls) then
 
 			}
 		},
-		Response = {
-			Connected = {0xAA,0x55,0x00,0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x02,0x00,0x06,0x61,0xBE,0x56},
-			ConnectedAlt = {0xAA,0x55,0x00,0x00,0x00,0xFE,0x00,0x00,0x00,0x00,0x00,0x00,0x02,0x00,0x00,0x00,0x02,0x00,0x2a,0x61,0xE2,0x56}
-		},
-
 	}
 	NovaStar.socket.ReadTimeout = 0
 	NovaStar.socket.WriteTimeout = 0
@@ -1171,15 +1166,15 @@ if (Controls) then
 
 	function sendCommand(cmd)
 		if cmd ~= nil then
-		if NovaStar.socket.IsConnected then 
-			print("Sending packet to connected NovaStar")
-		else
-			print("Disconnected for some reason?")
-		end;
-		print(hex_dump(getCmdString(NovaStar.Commands.Preamble) .. getCmdString(cmd) .. getCmdString(computeChecksum(cmd))))
-		if NovaStar.socket.IsConnected then
-			NovaStar.socket:Write(getCmdString(NovaStar.Commands.Preamble) .. getCmdString(cmd) .. getCmdString(computeChecksum(cmd)))
-		end
+			if NovaStar.socket.IsConnected then 
+				print("Sending packet to connected NovaStar")
+			else
+				print("Disconnected for some reason?")
+			end;
+			print(hex_dump(getCmdString(NovaStar.Commands.Preamble) .. getCmdString(cmd) .. getCmdString(computeChecksum(cmd))))
+			if NovaStar.socket.IsConnected then
+				NovaStar.socket:Write(getCmdString(NovaStar.Commands.Preamble) .. getCmdString(cmd) .. getCmdString(computeChecksum(cmd)))
+			end
 		end;
 	end
 
@@ -1229,23 +1224,7 @@ if (Controls) then
 		print("Reading " .. NovaStar.socket.BufferLength .. " Bytes")
 		local data = NovaStar.socket:Read(NovaStar.socket.BufferLength);
 		print(hex_dump(data))
-		if data == getCmdString(NovaStar.Response.Connected) then
-			print("Successful Connection Response Received")
-			NovaStar.setStatus(0,"Connected - " .. Properties['IP Address'].Value)
-			if(Properties['Default Brightness'].Value ~= '' and Controls['Brightness'].Value == Properties['Default Brightness'].Value ) then
-				print('Sending default brightness value of ' .. Properties['Default Brightness'].Value)
-				Controls['Brightness'].Value = Properties['Default Brightness'].Value
-				sendBrightness(Properties['Default Brightness'].Value)
-			end;
-		elseif data == getCmdString(NovaStar.Response.ConnectedAlt) then
-			print("Successful Connection Response Received")
-			NovaStar.setStatus(0,"Connected - " .. Properties['IP Address'].Value)
-			if(Properties['Default Brightness'].Value ~= '' and Controls['Brightness'].Value == Properties['Default Brightness'].Value ) then
-				print('Sending default brightness value of ' .. Properties['Default Brightness'].Value)
-				Controls['Brightness'].Value = Properties['Default Brightness'].Value
-				sendBrightness(Properties['Default Brightness'].Value)
-			end;
-		end
+		NovaStar.setStatus(0,"Connected - " .. Properties['IP Address'].Value)
 	end
 
 	NovaStar.socket.Closed = function()
@@ -1254,12 +1233,13 @@ if (Controls) then
 	end
 
 	NovaStar.socket.Error = function(sock, err)
-		print("TCP Socket Error: ", err)
+		print("TCP Socket Error: ")
+		print(err)
 		NovaStar.setStatus(2,"Communication error with NovaStar")
 		NovaStar.socket:Connect(NovaStar.IP, 5200);
 	end
 
-	NovaStar.socket.Timeout = function(sock, err)
+	NovaStar.socket.Timeout = function(sock)
 		print("TCP Socket Timeout" )
 		NovaStar.setStatus(2,"Timeout in connection to NovaStar")
 		NovaStar.socket:Connect(NovaStar.IP, 5200);
@@ -1268,7 +1248,6 @@ if (Controls) then
 	if Properties['Model'].Value ~= '' then
 		for k,v in pairs(NovaStar.Commands.Inputs[Properties['Model'].Value]) do
 			if (v ~= nil and #v > 1) then
-				print("value is not nill and length greater than 1")
 				Controls['IN'..k].EventHandler = function()
 					sendCommand(v)
 				end
@@ -1304,7 +1283,6 @@ if (Controls) then
 		presetTable = NovaStar.Commands.Presets[Properties['Model'].Value]
 		if presetTable ~= nil then
 			for k,v in pairs(presetTable) do 
-				print('PRESET'..k)
 				Controls['PRESET'..k].EventHandler = function()
 					sendPreset(v)
 				end
