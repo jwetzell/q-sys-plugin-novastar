@@ -3,7 +3,7 @@
 <package >
   <metadata>
     <id>NovaStar</id>
-    <version>0.2.0-master</version>
+    <version>0.3.0-master</version>
     <title>NovaStar Controller</title>
     <authors>Joel Wetzell</authors>
     <owners>Joel Wetzell</owners>
@@ -14,7 +14,7 @@
     <description>NovaStar Controller Plugin</description>
     <releaseNotes>AutoGenerateFromGitCommitMessages</releaseNotes>
     <copyright>Copyright 2021</copyright>
-    <tags>NovaStar VX4S VX6S VX1000 ProHD ProHDJr MCTRL4K</tags>
+    <tags>NovaStar VX4S VX6S VX1000 VXPro ProHD ProHDJr MCTRL4K</tags>
     <summary>A plugin for control of NovaStar Video Wall controllers</summary>
   </metadata>
   <files>
