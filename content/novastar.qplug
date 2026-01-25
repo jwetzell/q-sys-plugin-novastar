@@ -130,7 +130,7 @@ function GetControls(props)
 			UserPin = true
 		},
 		{
-			Name = "IN0",
+			Name = "IN10",
 			ControlType = "Button",
 			ButtonType = "Trigger",
 			PinStyle = "Input",
@@ -735,7 +735,7 @@ function GetControlLayout(props)
 	}
 
 
-	controls['IN0'] = {
+	controls['IN10'] = {
 		Style = "Button",
 		ButtonType = "Trigger",
 		Legend = InputLabels[props['Model'].Value][10] ~= nil and InputLabels[props['Model'].Value][10] or"0",
@@ -1279,13 +1279,8 @@ if (Controls) then
 					sendCommand(v)
 				end
 			else
-				if(k == 10) then 
-					Controls['IN0'].IsDisabled = true;
-					Controls['IN0'].IsInvisible = true;
-				else
-					Controls['IN'..k].IsDisabled = true;
-					Controls['IN'..k].IsInvisible = true;
-				end;
+				Controls['IN'..k].IsDisabled = true;
+				Controls['IN'..k].IsInvisible = true;
 			end;
 		end
 
@@ -1338,7 +1333,7 @@ if (Controls) then
 		Controls['IN7'].IsDisabled = true;
 		Controls['IN8'].IsDisabled = true;
 		Controls['IN9'].IsDisabled = true;
-		Controls['IN0'].IsDisabled = true;
+		Controls['IN10'].IsDisabled = true;
 		Controls['Brightness'].IsDisabled = true;
 	end;
 
